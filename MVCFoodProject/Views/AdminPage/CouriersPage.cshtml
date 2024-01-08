@@ -1,0 +1,120 @@
+﻿@model MVCFoodProject.Models.ViewModels.AdminPageViewModel;
+
+@{
+    ViewData["Title"] = "Couriers Page";
+}
+
+<table class="table text-center">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col" class="col-1">Фото</th>
+            <th scope="col" class="col-2">Імя</th>
+            <th scope="col">Role</th>
+            <th scope="col">More details</th>
+            <th scope="col">Замовлення</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var courier in Model.Couriers.Select((value, i) => new { i = i + 1, value }))
+        {
+            <tr>
+                <th scope="row" class="align-middle">@courier.i</th>
+                <th class="align-middle">
+                    <div style="width: 60px;">
+                        @if(courier.value.User.imgURL == null)
+                        {
+                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" class="img-fluid img-thumbnail">
+                        }
+                        else
+                        {
+                            <img src="@courier?.value?.User?.imgURL" class="img-fluid" alt="">
+                        }
+                    </div>
+                </th>
+                <th class="align-middle">@courier?.value?.User?.Name</th>
+                <th class="align-middle">
+                    @if(courier.value.Order.Any())
+                    {
+                        <div>Courier currently has an order</div>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-warning" data-user-id="@courier.value.Id" data-action="role_customer" onclick="onToggleRole(event)">
+                            Make "Customer"
+                        </button>
+                    }
+                </th>
+                <th class="align-middle">
+                    <button type="button" class="btn btn-info" data-bs-toggle="collapse" data-bs-target="#userdetails-@courier.i" aria-expanded="false" aria-controls="collapseExample">
+                        View
+                    </button>
+                </th>
+                <th class="align-middle">
+                    <button type="button" class="btn btn-info" data-bs-toggle="collapse" data-bs-target="#courier-@courier.i" aria-expanded="false" aria-controls="#courier-@courier.i">
+                        View Orders
+                    </button>
+                </th>
+            </tr>
+
+            <tr class="collapse table-info" id="userdetails-@courier.i">
+                <td colspan="12" class="hiddenRow">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Address</th>
+                                <th scope="col">Phone Number</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row" class="col-1">@courier.value.Id</th>
+                                <td class="col-1">@courier.value.User.Email</td>
+                                <td class="col-7">@courier.value.User.Adress</td>
+                                <td>@courier.value.User.Number</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="collapse" id="courier-@courier.i">
+                <td colspan="12" class="hiddenRow">
+                    <table class="table table-dark">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">ID Order</th>
+                                <th scope="col">Create Data</th>
+                                <th scope="col">Total Price</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Info</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in courier.value.Order.Select((value, i) => new { i = i + 1, value }))
+                            {
+                                <tr>
+                                    <th scope="row" class="align-middle">@order.i</th>
+                                    <th scope="row" class="align-middle">@order.value.Id</th>
+                                    <th scope="row" class="align-middle">@order.value.CreatedDate</th>
+                                    <th scope="row" class="align-middle">@order.value.TotalPrice</th>
+                                    <th scope="row" class="align-middle">
+                                        @order.value.status
+                                    </th>
+                                    <th scope="row" class="align-middle">
+                                        <button type="button" class="btn btn-info">
+                                            @Html.ActionLink("Детальніше", "OrderPage", "AdminPage", new { orderID = order.value.Id }, new { @class = "nav-link", target = "_blank" })
+                                        </button>
+                                    </th>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
